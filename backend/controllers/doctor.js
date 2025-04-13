@@ -1,8 +1,7 @@
-//module/packages
+// module/packages
 const db = require('../Database/connectDB');
 
-//route functions
-// 1.Doctor
+// route functions
 const getDoctorTables = async (req,res)=>{
     const [rows] = await db.query(`SELECT * FROM doctor`)
     res.status(200).json(rows);
@@ -48,7 +47,4 @@ const getDoctor = async (req,res) =>{
     }
 }
 
-
-
-//exports
-module.exports = {getDoctorTables, getDoctor};
+module.exports ={getDoctorTables,getDoctor}
