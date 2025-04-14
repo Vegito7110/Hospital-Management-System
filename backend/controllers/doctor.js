@@ -78,6 +78,81 @@ const postDoctor = async(req,res) =>{
     }
 }
 
+const patchDoctor = async (req, res) => {
+    const { DoctorID, Name, Specialization, MobileNumber, Cabin, Address } = req.body;
+  
+    if (!DoctorID) {
+      return res.status(400).json({ message: 'Please provide DoctorID for patching' });
+    }
+  
+    let baseQuery = 'UPDATE Doctor SET ';
+    const queryParams = [];
+    const updates = [];
+  
+    if (Name) {
+      updates.push('Name = ?');
+      queryParams.push(Name);
+    }
+    if (Specialization) {
+      updates.push('Specialization = ?');
+      queryParams.push(Specialization);
+    }
+    if (MobileNumber) {
+      updates.push('MobileNumber = ?');
+      queryParams.push(MobileNumber);
+    }
+    if (Cabin) {
+      updates.push('Cabin = ?');
+      queryParams.push(Cabin);
+    }
+    if (Address) {
+      updates.push('Address = ?');
+      queryParams.push(Address);
+    }
+  
+    // Check if there's anything to update
+    if (updates.length === 0) {
+      return res.status(400).json({ message: 'No fields to update provided' });
+    }
+  
+    // Join the update statements and add WHERE clause
+    baseQuery += updates.join(', ');
+    baseQuery += ' WHERE DoctorID = ?';
+    queryParams.push(DoctorID); // Add DoctorID to the end of parameters
+  
+    try {
+      const [result] = await db.execute(baseQuery, queryParams);
+      res.status(200).json({ message: 'Doctor details updated successfully', result });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to update doctor' });
+    }
+};
+
+const deleteDoctor = async (req, res) => {
+    const { DoctorID } = req.body;
+  
+    if (!DoctorID) {
+      return res.status(400).json({ message: 'Please provide DoctorID to delete' });
+    }
+  
+    const deleteQuery = `DELETE FROM Doctor WHERE DoctorID = ?`;
+  
+    try {
+      const [result] = await db.execute(deleteQuery, [DoctorID]);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: `No doctor found with ID: ${DoctorID}` });
+      }
+  
+      res.status(200).json({ message: `Doctor with ID ${DoctorID} deleted successfully` });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to delete doctor' });
+    }
+};
+
+  
 
 module.exports ={getDoctorTables,getDoctor, postDoctor}
 

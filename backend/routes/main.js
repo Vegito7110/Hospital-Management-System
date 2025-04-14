@@ -18,7 +18,7 @@ router.route('/cashier1').get(getCashierTables)
 router.route('/cashier2').get(getCashier)
 
 // doctor routes
-router.route('/doctor1').get(getDoctorTables).post(postDoctor);
+router.route('/doctor1').get(getDoctorTables).post(postDoctor)
 router.route('/doctor2').get(getDoctor)
 
 // inpatient routes
