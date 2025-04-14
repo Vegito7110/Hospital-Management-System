@@ -1,5 +1,17 @@
 import React, { useState } from "react";
 
+// Define the specialization options array
+const specializationOptions = [
+  "Nephrology",
+  "Orthopaedics & Joint Replacement",
+  "Cardiac Sciences",
+  "Obstetrics And Gynaecology",
+  "Cancer Care / Oncology",
+  "Neurosciences",
+  "Internal Medicine",
+  "General Surgery",
+];
+
 export default function Doctors() {
   const [formData, setFormData] = useState({
     doctorID: '',
@@ -70,14 +82,77 @@ export default function Doctors() {
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+
+              {/* Default disabled option */}
+              <option value="" disabled>
+                Select a Specialization
+              </option>
+
+              {/* Map over options array */}
+              {specializationOptions.map((spec) => (
+                <option key={spec} value={spec}>
+                  {spec}
+                </option>
+              ))}
             </select>
+          </div>
 
-            {/* Default disabled option */}
-            <option value="" disabled>
-              Select a Specialization
-            </option>
+          {/* Mobile Number Field */}
+          <div>
+            <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700 mb-1">
+              Mobile Number
+            </label>
+            <input
+              type="tel"
+              id="mobileNumber"
+              name="mobileNumber"
+              value={formData.mobileNumber}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="e.g., 9876543210"
+            />
+          </div>
 
-            {/* Map over options array */}
+          {/* Cabin Field */}
+          <div>
+            <label htmlFor="cabin" className="block text-sm font-medium text-gray-700 mb-1">
+              Cabin Number
+            </label>
+            <input
+              type="text"
+              id="cabin"
+              name="cabin"
+              value={formData.cabin}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="e.g., 203"
+            />
+          </div>
+
+          {/* Address Field */}
+          <div>
+            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+              Address
+            </label>
+            <textarea
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="e.g., 123 Church Street, Delhi"
+            />
+          </div>
+
+          {/* Submit Button */}
+          <div>
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Add Doctor
+            </button>
           </div>
         </form>
     </div>
