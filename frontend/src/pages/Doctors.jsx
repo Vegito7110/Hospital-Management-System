@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import axios from 'axios'
 // Define the specialization options array
 const specializationOptions = [
   "Nephrology",
@@ -14,22 +14,22 @@ const specializationOptions = [
 
 export default function Doctors() {
   const [formData, setFormData] = useState({
-    doctorID: '',
-    name: '',
-    specialization: '',
-    mobileNumber: '',
-    cabin: '',
-    address: ''
+    DoctorID: '',
+    Name: '',
+    Specialization: '',
+    MobileNumber: '',
+    Cabin: '',
+    Address: ''
   });
 
   const [doctorID, setDoctorID] = useState('');
   const [updateID, setUpdateID] = useState('');
   const [deleteID, setDeleteID] = useState('');
   const [updatedData, setUpdatedData] = useState({
-    name: '',
-    specialization: '',
-    mobileNumber: ''
-  });
+    Name: '',
+    Specialization: '',
+    MobileNumber: ''
+  })
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,10 +39,19 @@ export default function Doctors() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Add Doctor:", formData);
-    // Call API to add doctor
+    try {
+      const response = await axios.post('http://localhost:5000/admin/doctor1', formData , {
+        headers: {
+          'Content-Type': 'application/json',
+        }});
+      console.log("Doctor added successfully:", response.data);
+      alert("Doctor added!");
+    } catch (error) {
+      console.error("Error adding doctor:", error);
+      alert("Failed to add doctor");
+    }
   };
 
   const handleCheckDoctor = (e) => {
@@ -72,21 +81,20 @@ export default function Doctors() {
         {/* Doctor ID */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Doctor ID</label>
-          <input type="number" name="doctorID" value={formData.doctorID} onChange={handleChange}
+          <input type="number" name="DoctorID" value={formData.DoctorID} onChange={handleChange}
             className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 101" />
         </div>
-
         {/* Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-          <input type="text" name="name" value={formData.name} onChange={handleChange}
+          <input type="text" name="Name" value={formData.Name} onChange={handleChange}
             className="w-full px-3 py-2 border rounded-md" placeholder="e.g., Dr. Nitin" required />
         </div>
 
         {/* Specialization */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Specialization</label>
-          <select name="specialization" value={formData.specialization} onChange={handleChange} required
+          <select name="Specialization" value={formData.Specialization} onChange={handleChange} required
             className="w-full px-3 py-2 border rounded-md">
             <option value="" disabled>Select a Specialization</option>
             {specializationOptions.map((spec) => (
@@ -98,21 +106,21 @@ export default function Doctors() {
         {/* Mobile Number */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
-          <input type="tel" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange}
+          <input type="tel" name="MobileNumber" value={formData.MobileNumber} onChange={handleChange}
             className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 9876543210" />
         </div>
 
         {/* Cabin */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Cabin</label>
-          <input type="text" name="cabin" value={formData.cabin} onChange={handleChange}
+          <input type="text" name="Cabin" value={formData.Cabin} onChange={handleChange}
             className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 203" />
         </div>
 
         {/* Address */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-          <textarea name="address" value={formData.address} onChange={handleChange} rows={3}
+          <textarea name="Address" value={formData.Address} onChange={handleChange} rows={3}
             className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 123 Church Street, Delhi" />
         </div>
 

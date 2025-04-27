@@ -8,7 +8,7 @@ const getDoctorTables = async (req,res)=>{
 }
 
 const getDoctor = async (req,res) =>{
-    const {DoctorID,Name,Specialization, MobileNumber, Cabin, Address} = req.query;
+    const {DoctorID,Name,Specialization, MobileNumber, Cabin, Address} = req.body;
     let baseQuery = 'SELECT * FROM doctor WHERE 1=1'
     const queryObject =[];
     if(DoctorID){

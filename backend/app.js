@@ -1,5 +1,5 @@
 //module/packages
-require('dotenv').config
+require('dotenv').config()
 const express = require('express')
 const app = express();
 const router1 = require('./routes/main.js');
@@ -14,6 +14,6 @@ app.use('/admin', router1);
 
 
 //server
-app.listen(3000,()=>{
+app.listen(5000,()=>{
     console.log('server is running');
 })
