@@ -35,6 +35,70 @@ const getCashier = async (req,res) =>{
     }
 }
 
+const postCashier = async (req, res) => {
+    const { StaffID, Name, BillID } = req.body;
+  
+    if (!StaffID || !Name || !BillID) {
+      return res.status(400).json({ message: 'Please provide important details' });
+    }
+  
+    const query = `
+      INSERT INTO Cashier (StaffID, Name, BillID)
+      VALUES (?, ?, ?)
+    `;
+  
+    const queryObject = [
+      Number(StaffID),
+      Name,
+      Number(BillID),
+    ];
+  
+    try {
+      const [result] = await db.execute(query, queryObject);
+      res.status(200).json({ message: 'Cashier inserted successfully', result });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to insert Cashier' });
+    }
+};
+
+const patchCashier = async (req, res) => {
+    const { StaffID, Name, BillID } = req.body;
+  
+    if (!StaffID) {
+      return res.status(400).json({ message: 'Please provide StaffID for patching' });
+    }
+  
+    let baseQuery = 'UPDATE Cashier SET ';
+    const queryParams = [];
+    const updates = [];
+  
+    if (Name) {
+      updates.push('Name = ?');
+      queryParams.push(Name);
+    }
+    if (BillID) {
+      updates.push('BillID = ?');
+      queryParams.push(BillID);
+    }
+  
+    if (updates.length === 0) {
+      return res.status(400).json({ message: 'No fields to update provided' });
+    }
+  
+    baseQuery += updates.join(', ');
+    baseQuery += ' WHERE StaffID = ?';
+    queryParams.push(StaffID);
+  
+    try {
+      const [result] = await db.execute(baseQuery, queryParams);
+      res.status(200).json({ message: 'Cashier details updated successfully', result });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to update Cashier' });
+    }
+};
+  
 const deleteCashier = async (req, res) => {
     const { StaffID } = req.body;
   
@@ -58,4 +122,4 @@ const deleteCashier = async (req, res) => {
     }
 };
 
-module.exports ={ getCashierTables, getCashier, deleteCashier}
+module.exports ={ getCashierTables, getCashier, postCashier,patchCashier, deleteCashier}
