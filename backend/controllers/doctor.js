@@ -85,7 +85,7 @@ const patchDoctor = async (req, res) => {
       return res.status(400).json({ message: 'Please provide DoctorID for patching' });
     }
   
-    let baseQuery = 'UPDATE Doctor SET ';
+    let baseQuery = 'UPDATE doctor SET ';
     const queryParams = [];
     const updates = [];
   
@@ -109,7 +109,6 @@ const patchDoctor = async (req, res) => {
       updates.push('Address = ?');
       queryParams.push(Address);
     }
-  
     // Check if there's anything to update
     if (updates.length === 0) {
       return res.status(400).json({ message: 'No fields to update provided' });
@@ -136,7 +135,7 @@ const deleteDoctor = async (req, res) => {
       return res.status(400).json({ message: 'Please provide DoctorID to delete' });
     }
   
-    const deleteQuery = `DELETE FROM Doctor WHERE DoctorID = ?`;
+    const deleteQuery = `DELETE FROM doctor WHERE DoctorID = ?`;
   
     try {
       const [result] = await db.execute(deleteQuery, [DoctorID]);
@@ -152,9 +151,8 @@ const deleteDoctor = async (req, res) => {
     }
 };
 
-  
 
-module.exports ={getDoctorTables,getDoctor, postDoctor}
+module.exports ={getDoctorTables,getDoctor, postDoctor,patchDoctor,deleteDoctor}
 
 
 // Alternate method for postDoctor

@@ -44,4 +44,27 @@ const getBilling = async (req,res) =>{
     }
 }
 
-module.exports ={getBillingTables,getBilling}
+const deleteBill = async (req, res) => {
+    const { BillID } = req.body;
+  
+    if (!BillID) {
+      return res.status(400).json({ message: 'Please provide BillID to delete' });
+    }
+  
+    const deleteQuery = `DELETE FROM billing WHERE BillID = ?`;
+  
+    try {
+      const [result] = await db.execute(deleteQuery, [BillID]);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: `No doctor found with ID: ${BillID}` });
+      }
+  
+      res.status(200).json({ message: `Bill with ID ${BillID} deleted successfully` });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to delete bill' });
+    }
+};
+
+module.exports ={getBillingTables,getBilling, deleteBill}

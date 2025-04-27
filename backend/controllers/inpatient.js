@@ -60,4 +60,26 @@ const getInPatient = async (req,res) =>{
     }
 }
 
-module.exports = {getInPatientTables, getInPatient}
+const deleteInPatient = async (req, res) => {
+    const { PatientID } = req.body;
+  
+    if (!PatientID) {
+      return res.status(400).json({ message: 'Please provide InpatientID to delete' });
+    }
+  
+    const deleteQuery = `DELETE FROM inpatient WHERE InpatientID = ?`;
+  
+    try {
+      const [result] = await db.execute(deleteQuery, [PatientID]);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: `No inpatient found with ID: ${PatientID}` });
+      }
+      res.status(200).json({ message: `Inpatient with ID ${PatientID} deleted successfully` });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to delete inpatient' });
+    }
+};
+
+module.exports = {getInPatientTables, getInPatient, deleteInPatient}

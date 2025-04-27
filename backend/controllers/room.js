@@ -39,5 +39,27 @@ const getRoom = async (req,res) =>{
     }
 }
 
+const deleteRoom = async (req, res) => {
+    const { RoomNumber } = req.body;
+  
+    if (!RoomNumber) {
+      return res.status(400).json({ message: 'Please provide RoomNumber to delete' });
+    }
+  
+    const deleteQuery = `DELETE FROM room WHERE RoomNumber = ?`;
+  
+    try {
+      const [result] = await db.execute(deleteQuery, [RoomNumber]);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: `No room found with ID: ${RoomNumber}` });
+      }
+  
+      res.status(200).json({ message: `Room with ID ${RoomNumber} deleted successfully` });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to delete room' });
+    }
+};
 // module exports
 module.exports = { getRoomTables, getRoom}

@@ -54,5 +54,26 @@ const getOutPatient = async (req,res) =>{
         res.status(500).json({message:'Failed to fetch any outpatients'})
     }
 }
-
+const deleteDoctor = async (req, res) => {
+    const { PatientID } = req.body;
+  
+    if (!PatientID) {
+      return res.status(400).json({ message: 'Please provide PatientID to delete' });
+    }
+  
+    const deleteQuery = `DELETE FROM outpatient WHERE PatientID = ?`;
+  
+    try {
+      const [result] = await db.execute(deleteQuery, [PatientID]);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: `No outpatient found with ID: ${PatientID}` });
+      }
+  
+      res.status(200).json({ message: `OutPatient with ID ${PatientID} deleted successfully` });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to delete outpatient' });
+    }
+};
 module.exports ={getOutPatientTables, getOutPatient}

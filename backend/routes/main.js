@@ -1,7 +1,7 @@
 // modules/packages
 const express = require('express');
 const router = express.Router();
-const {getDoctorTables, getDoctor, postDoctor} = require('../controllers/doctor');
+const {getDoctorTables, getDoctor, postDoctor, patchDoctor, deleteDoctor} = require('../controllers/doctor');
 const {getBillingTables, getBilling} = require('../controllers/billing')
 const {getCashier, getCashierTables}=require('../controllers/cashier')
 const {getInPatient,getInPatientTables}= require('../controllers/inpatient')
@@ -18,7 +18,7 @@ router.route('/cashier1').get(getCashierTables)
 router.route('/cashier2').get(getCashier)
 
 // doctor routes
-router.route('/doctor1').get(getDoctorTables).post(postDoctor)
+router.route('/doctor1').get(getDoctorTables).post(postDoctor).patch(patchDoctor).delete(deleteDoctor)
 router.route('/doctor2').get(getDoctor)
 
 // inpatient routes

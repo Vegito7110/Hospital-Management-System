@@ -35,4 +35,27 @@ const getCashier = async (req,res) =>{
     }
 }
 
-module.exports ={ getCashierTables, getCashier}
+const deleteCashier = async (req, res) => {
+    const { StaffID } = req.body;
+  
+    if (!StaffID) {
+      return res.status(400).json({ message: 'Please provide StaffID to delete' });
+    }
+  
+    const deleteQuery = `DELETE FROM cashier WHERE StaffID = ?`;
+  
+    try {
+      const [result] = await db.execute(deleteQuery, [StaffID]);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: `No doctor found with ID: ${StaffID}` });
+      }
+  
+      res.status(200).json({ message: `Doctor with ID ${StaffID} deleted successfully` });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to delete Staff' });
+    }
+};
+
+module.exports ={ getCashierTables, getCashier, deleteCashier}
