@@ -74,70 +74,114 @@ const postBilling = async (req, res) => {
 };
 
 const patchBilling = async (req, res) => {
-    const { BillID, InPatientID, OutPatientID, RoomID, Expenses } = req.body;
+    // const { BillID, InPatientID, OutPatientID, RoomID, Expenses } = req.body;
   
-    if (!BillID) {
-      return res.status(400).json({ message: 'Please provide BillID for patching' });
-    }
+    // if (!BillID) {
+    //   return res.status(400).json({ message: 'Please provide BillID for patching' });
+    // }
   
-    let baseQuery = 'UPDATE Billing SET ';
-    const queryParams = [];
-    const updates = [];
+    // let baseQuery = 'UPDATE Billing SET ';
+    // const queryParams = [];
+    // const updates = [];
   
-    if (InPatientID) {
-      updates.push('InPatientID = ?');
-      queryParams.push(InPatientID);
-    }
-    if (OutPatientID) {
-      updates.push('OutPatientID = ?');
-      queryParams.push(OutPatientID);
-    }
-    if (RoomID) {
-      updates.push('RoomID = ?');
-      queryParams.push(RoomID);
-    }
-    if (Expenses) {
-      updates.push('Expenses = ?');
-      queryParams.push(Expenses);
-    }
+    // if (InPatientID) {
+    //   updates.push('InPatientID = ?');
+    //   queryParams.push(InPatientID);
+    // }
+    // if (OutPatientID) {
+    //   updates.push('OutPatientID = ?');
+    //   queryParams.push(OutPatientID);
+    // }
+    // if (RoomID) {
+    //   updates.push('RoomID = ?');
+    //   queryParams.push(RoomID);
+    // }
+    // if (Expenses) {
+    //   updates.push('Expenses = ?');
+    //   queryParams.push(Expenses);
+    // }
   
-    if (updates.length === 0) {
-      return res.status(400).json({ message: 'No fields to update provided' });
-    }
+    // if (updates.length === 0) {
+    //   return res.status(400).json({ message: 'No fields to update provided' });
+    // }
   
-    baseQuery += updates.join(', ');
-    baseQuery += ' WHERE BillID = ?';
-    queryParams.push(BillID);
+    // baseQuery += updates.join(', ');
+    // baseQuery += ' WHERE BillID = ?';
+    // queryParams.push(BillID);
+  
+    // try {
+    //   const [result] = await db.execute(baseQuery, queryParams);
+    //   res.status(200).json({ message: 'Billing details updated successfully', result });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to update Billing' });
+    // }
+    const { id } = req.params;
+    const { Expenses } = req.body;
   
     try {
-      const [result] = await db.execute(baseQuery, queryParams);
-      res.status(200).json({ message: 'Billing details updated successfully', result });
+      console.log(`Updating Billing ID ${id} with data:`, req.body);
+  
+      let updateFields = [];
+      let values = [];
+  
+      if (Expenses !== undefined) {
+        updateFields.push('Expenses = ?');
+        values.push(Expenses);
+      }
+  
+      if (updateFields.length === 0) {
+        return res.status(400).json({ message: 'No fields to update' });
+      }
+  
+      const query = `
+        UPDATE Billing
+        SET ${updateFields.join(', ')}
+        WHERE BillID = ?
+      `;
+      values.push(id);
+  
+      const [result] = await db.execute(query, values);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Billing not found' });
+      }
+  
+      res.status(200).json({ message: 'Billing updated successfully' });
     } catch (error) {
-      console.error(error);
+      console.error('Error updating Billing:', error);
       res.status(500).json({ message: 'Failed to update Billing' });
     }
 };
   
 const deleteBill = async (req, res) => {
-    const { BillID } = req.body;
+    // const { BillID } = req.body;
   
-    if (!BillID) {
-      return res.status(400).json({ message: 'Please provide BillID to delete' });
-    }
+    // if (!BillID) {
+    //   return res.status(400).json({ message: 'Please provide BillID to delete' });
+    // }
   
-    const deleteQuery = `DELETE FROM billing WHERE BillID = ?`;
+    // const deleteQuery = `DELETE FROM billing WHERE BillID = ?`;
   
+    // try {
+    //   const [result] = await db.execute(deleteQuery, [BillID]);
+  
+    //   if (result.affectedRows === 0) {
+    //     return res.status(404).json({ message: `No doctor found with ID: ${BillID}` });
+    //   }
+  
+    //   res.status(200).json({ message: `Bill with ID ${BillID} deleted successfully` });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to delete bill' });
+    // }
+    const { id } = req.params;
     try {
-      const [result] = await db.execute(deleteQuery, [BillID]);
-  
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: `No doctor found with ID: ${BillID}` });
-      }
-  
-      res.status(200).json({ message: `Bill with ID ${BillID} deleted successfully` });
+      const [result] = await db.execute(`DELETE FROM Billing WHERE BillID = ?`, [id]);
+      if (result.affectedRows === 0) return res.status(404).json({ message: 'Billing not found' });
+      res.json({ message: 'Billing deleted successfully' });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Failed to delete bill' });
+      res.status(500).json({ error: 'Failed to delete Billing' });
     }
 };
 

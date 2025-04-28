@@ -54,22 +54,40 @@ export default function Doctors() {
     }
   };
 
-  const handleCheckDoctor = (e) => {
+  const handleCheckDoctor = async(e) => {
     e.preventDefault();
-    console.log("Checking doctor with ID:", doctorID);
-    // Call API to fetch doctor by ID
+    try {
+      const response = await axios.get(`http://localhost:5000/admin/doctor1/${doctorID}`);
+      console.log("Doctor data:", response.data);
+      alert(`Doctor found: ${response.data.name}`);
+    } catch (error) {
+      console.error("Error fetching doctor:", error);
+      alert("Doctor not found");
+    }
   };
 
-  const handleDeleteDoctor = (e) => {
+  const handleDeleteDoctor = async(e) => {
     e.preventDefault();
-    console.log("Deleting doctor with ID:", deleteID);
-    // Call API to delete doctor
+    try {
+      await axios.delete(`http://localhost:5000/admin/doctor1/${deleteID}`);
+      console.log("Doctor deleted successfully");
+      alert("Doctor deleted!");
+    } catch (error) {
+      console.error("Error deleting doctor:", error);
+      alert("Failed to delete doctor");
+    }
   };
 
-  const handleUpdateDoctor = (e) => {
+  const handleUpdateDoctor = async(e) => {
     e.preventDefault();
-    console.log(`Updating Doctor ID ${updateID} with data:`, updatedData);
-    // Call API to update doctor
+    try {
+      const response = await axios.patch(`http://localhost:5000/admin/doctor1/${updateID}`, updatedData);
+      console.log("Doctor updated successfully:", response.data);
+      alert("Doctor updated!");
+    } catch (error) {
+      console.error("Error updating doctor:", error);
+      alert("Failed to update doctor");
+    }
   };
 
   return (
@@ -130,13 +148,13 @@ export default function Doctors() {
         </button>
       </form>
 
-      {/* Check Doctor */}
+      {/* Check Doctor
       <form onSubmit={handleCheckDoctor} className="mb-10 space-y-2">
         <h3 className="text-lg font-semibold">Check Doctor</h3>
         <input type="text" placeholder="Enter Doctor ID" value={doctorID}
           onChange={(e) => setDoctorID(e.target.value)} className="border px-3 py-2 rounded w-full" />
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Check</button>
-      </form>
+      </form> */}
 
       {/* Delete Doctor */}
       <form onSubmit={handleDeleteDoctor} className="mb-10 space-y-2">
@@ -152,12 +170,12 @@ export default function Doctors() {
         <input type="text" placeholder="Enter Doctor ID to update" value={updateID}
           onChange={(e) => setUpdateID(e.target.value)} className="border px-3 py-2 rounded w-full" />
 
-        <input type="text" placeholder="Updated Name" value={updatedData.name}
-          onChange={(e) => setUpdatedData({ ...updatedData, name: e.target.value })}
+        <input type="text" placeholder="Updated Name" value={updatedData.Name}
+          onChange={(e) => setUpdatedData({ ...updatedData, Name: e.target.value })}
           className="border px-3 py-2 rounded w-full" />
 
-        <select value={updatedData.specialization}
-          onChange={(e) => setUpdatedData({ ...updatedData, specialization: e.target.value })}
+        <select value={updatedData.Specialization}
+          onChange={(e) => setUpdatedData({ ...updatedData, Specialization: e.target.value })}
           className="border px-3 py-2 rounded w-full">
           <option value="" disabled>Update Specialization</option>
           {specializationOptions.map((spec) => (
@@ -165,8 +183,8 @@ export default function Doctors() {
           ))}
         </select>
 
-        <input type="text" placeholder="Updated Mobile Number" value={updatedData.mobileNumber}
-          onChange={(e) => setUpdatedData({ ...updatedData, mobileNumber: e.target.value })}
+        <input type="text" placeholder="Updated Mobile Number" value={updatedData.MobileNumber}
+          onChange={(e) => setUpdatedData({ ...updatedData, MobileNumber: e.target.value })}
           className="border px-3 py-2 rounded w-full" />
 
         <button type="submit" className="bg-yellow-500 text-white px-4 py-2 rounded">Update</button>

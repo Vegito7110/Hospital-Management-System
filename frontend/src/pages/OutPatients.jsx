@@ -1,100 +1,175 @@
 import React, { useState } from "react";
+import axios from 'axios';
 
-export default function Outpatients() {
+export default function OutPatients() {
   const [formData, setFormData] = useState({
-    patientID: '',
-    billID: '',
-    expenses: ''
+    PatientID: '',
+    AdmissionDate: '',
+    DischargeDate: '',
+    Gender: '',
+    MobileNumber: '',
+    Address: '',
+    OPD_Date: '',
+    DoctorID: ''
   });
 
-  const [checkID, setCheckID] = useState('');
-  const [deleteID, setDeleteID] = useState('');
+  const [patientID, setPatientID] = useState('');
   const [updateID, setUpdateID] = useState('');
+  const [deleteID, setDeleteID] = useState('');
   const [updatedData, setUpdatedData] = useState({
-    billID: '',
-    expenses: ''
+    MobileNumber: '',
+    Address: '',
+    DischargeDate: ''
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    setFormData(prevState => ({
+      ...prevState,
       [name]: value
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Add Outpatient:", formData);
-    // Add API call here
+    try {
+      const response = await axios.post('http://localhost:5000/admin/outpatient1', formData, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      console.log("OutPatient added successfully:", response.data);
+      alert("Patient added!");
+    } catch (error) {
+      console.error("Error adding patient:", error);
+      alert("Failed to add patient");
+    }
   };
 
-  const handleCheck = (e) => {
+  const handleCheckPatient = async (e) => {
     e.preventDefault();
-    console.log("Checking Outpatient with ID:", checkID);
-    // Fetch API
+    try {
+      const response = await axios.get(`http://localhost:5000/admin/outpatient/${patientID}`);
+      console.log("Patient data:", response.data);
+      alert(`Patient found: ${response.data.PatientID}`);
+    } catch (error) {
+      console.error("Error fetching patient:", error);
+      alert("Patient not found");
+    }
   };
 
-  const handleDelete = (e) => {
+  const handleDeletePatient = async (e) => {
     e.preventDefault();
-    console.log("Deleting Outpatient with ID:", deleteID);
-    // Delete API
+    try {
+      await axios.delete(`http://localhost:5000/admin/outpatient1/${deleteID}`);
+      console.log("Patient deleted successfully");
+      alert("Patient deleted!");
+    } catch (error) {
+      console.error("Error deleting patient:", error);
+      alert("Failed to delete patient");
+    }
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdatePatient = async (e) => {
     e.preventDefault();
-    console.log(`Updating Patient ID ${updateID} with:`, updatedData);
-    // Update API
+    try {
+      const response = await axios.patch(`http://localhost:5000/admin/outpatient1/${updateID}`, updatedData);
+      console.log("Patient updated successfully:", response.data);
+      alert("Patient updated!");
+    } catch (error) {
+      console.error("Error updating patient:", error);
+      alert("Failed to update patient");
+    }
   };
 
   return (
-    <div className="px-6 max-w-4xl mx-auto">
-      <h2 className="text-lg font-semibold mb-4">Add Outpatient</h2>
+    <div className="p-6 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Add Outpatient Details</h2>
 
-      {/* Add Form */}
+      {/* Add Outpatient Form */}
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-8 shadow-md rounded-lg mb-10">
-        <input type="text" name="patientID" placeholder="Patient ID" value={formData.patientID} onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md" required />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Patient ID</label>
+          <input type="number" name="PatientID" value={formData.PatientID} onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 101" required />
+        </div>
 
-        <input type="text" name="billID" placeholder="Bill ID" value={formData.billID} onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md" required />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Admission Date</label>
+          <input type="date" name="AdmissionDate" value={formData.AdmissionDate} onChange={handleChange} required
+            className="w-full px-3 py-2 border rounded-md" />
+        </div>
 
-        <input type="number" name="expenses" placeholder="Expenses" value={formData.expenses} onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md" required />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Discharge Date</label>
+          <input type="date" name="DischargeDate" value={formData.DischargeDate} onChange={handleChange} required
+            className="w-full px-3 py-2 border rounded-md" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+          <input type="tel" name="MobileNumber" value={formData.MobileNumber} onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 9876543210" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+          <input type="text" name="Gender" value={formData.Gender} onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., Male / Female" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+          <textarea name="Address" value={formData.Address} onChange={handleChange} rows={3}
+            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 123 Church Street, Delhi" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">OPD_Date</label>
+          <input type="date" name="OPD_Date" value={formData.OPD_Date} onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 2001" required />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Doctor ID</label>
+          <input type="number" name="DoctorID" value={formData.DoctorID} onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 101" />
+        </div>
 
         <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          Add Outpatient
+          Add Patient
         </button>
       </form>
 
-      {/* Check Patient */}
-      <form onSubmit={handleCheck} className="mb-10 space-y-2">
+      {/* Check Outpatient
+      <form onSubmit={handleCheckPatient} className="mb-10 space-y-2">
         <h3 className="text-lg font-semibold">Check Outpatient</h3>
-        <input type="text" placeholder="Enter Patient ID" value={checkID}
-          onChange={(e) => setCheckID(e.target.value)} className="border px-3 py-2 rounded w-full" />
+        <input type="text" placeholder="Enter Patient ID" value={patientID}
+          onChange={(e) => setPatientID(e.target.value)} className="border px-3 py-2 rounded w-full" />
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Check</button>
-      </form>
+      </form> */}
 
-      {/* Delete */}
-      <form onSubmit={handleDelete} className="mb-10 space-y-2">
+      {/* Delete Outpatient */}
+      <form onSubmit={handleDeletePatient} className="mb-10 space-y-2">
         <h3 className="text-lg font-semibold">Delete Outpatient</h3>
-        <input type="text" placeholder="Enter Patient ID to delete" value={deleteID}
+        <input type="number" placeholder="Enter Patient ID to delete" value={deleteID}
           onChange={(e) => setDeleteID(e.target.value)} className="border px-3 py-2 rounded w-full" />
         <button type="submit" className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
       </form>
 
-      {/* Update */}
-      <form onSubmit={handleUpdate} className="mb-10 space-y-2">
+      {/* Update Outpatient */}
+      <form onSubmit={handleUpdatePatient} className="mb-10 space-y-2">
         <h3 className="text-lg font-semibold">Update Outpatient Details</h3>
         <input type="text" placeholder="Enter Patient ID to update" value={updateID}
           onChange={(e) => setUpdateID(e.target.value)} className="border px-3 py-2 rounded w-full" />
 
-        <input type="text" placeholder="Updated Bill ID" value={updatedData.billID}
-          onChange={(e) => setUpdatedData({ ...updatedData, billID: e.target.value })}
+        <input type="text" placeholder="Updated Mobile Number" value={updatedData.MobileNumber}
+          onChange={(e) => setUpdatedData({ ...updatedData, MobileNumber: e.target.value })}
           className="border px-3 py-2 rounded w-full" />
 
-        <input type="number" placeholder="Updated Expenses" value={updatedData.expenses}
-          onChange={(e) => setUpdatedData({ ...updatedData, expenses: e.target.value })}
+        <input type="text" placeholder="Updated Address" value={updatedData.Address}
+          onChange={(e) => setUpdatedData({ ...updatedData, Address: e.target.value })}
+          className="border px-3 py-2 rounded w-full" />
+
+        <input type="date" placeholder="Updated Discharge Date" value={updatedData.DischargeDate}
+          onChange={(e) => setUpdatedData({ ...updatedData, DischargeDate: e.target.value })}
           className="border px-3 py-2 rounded w-full" />
 
         <button type="submit" className="bg-yellow-500 text-white px-4 py-2 rounded">Update</button>
@@ -102,5 +177,3 @@ export default function Outpatients() {
     </div>
   );
 }
-
-  

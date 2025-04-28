@@ -88,82 +88,163 @@ const postOutPatient = async (req, res) => {
   };
 
 const patchOutPatient = async (req, res) => {
-    const { PatientID, AdmissionDate, DischargeDate, Gender, MobileNumber, Address, OPD_Date, DoctorID } = req.body;
+    // const { PatientID, AdmissionDate, DischargeDate, Gender, MobileNumber, Address, OPD_Date, DoctorID } = req.body;
   
-    if (!PatientID) {
-      return res.status(400).json({ message: 'Please provide PatientID for patching' });
-    }
+    // if (!PatientID) {
+    //   return res.status(400).json({ message: 'Please provide PatientID for patching' });
+    // }
   
-    let baseQuery = 'UPDATE OutPatient SET ';
-    const queryParams = [];
-    const updates = [];
+    // let baseQuery = 'UPDATE OutPatient SET ';
+    // const queryParams = [];
+    // const updates = [];
   
-    if (AdmissionDate) {
-      updates.push('AdmissionDate = ?');
-      queryParams.push(AdmissionDate);
-    }
-    if (DischargeDate) {
-      updates.push('DischargeDate = ?');
-      queryParams.push(DischargeDate);
-    }
-    if (Gender) {
-      updates.push('Gender = ?');
-      queryParams.push(Gender);
-    }
-    if (MobileNumber) {
-      updates.push('MobileNumber = ?');
-      queryParams.push(MobileNumber);
-    }
-    if (Address) {
-      updates.push('Address = ?');
-      queryParams.push(Address);
-    }
-    if (OPD_Date) {
-      updates.push('OPD_Date = ?');
-      queryParams.push(OPD_Date);
-    }
-    if (DoctorID) {
-      updates.push('DoctorID = ?');
-      queryParams.push(DoctorID);
-    }
+    // if (AdmissionDate) {
+    //   updates.push('AdmissionDate = ?');
+    //   queryParams.push(AdmissionDate);
+    // }
+    // if (DischargeDate) {
+    //   updates.push('DischargeDate = ?');
+    //   queryParams.push(DischargeDate);
+    // }
+    // if (Gender) {
+    //   updates.push('Gender = ?');
+    //   queryParams.push(Gender);
+    // }
+    // if (MobileNumber) {
+    //   updates.push('MobileNumber = ?');
+    //   queryParams.push(MobileNumber);
+    // }
+    // if (Address) {
+    //   updates.push('Address = ?');
+    //   queryParams.push(Address);
+    // }
+    // if (OPD_Date) {
+    //   updates.push('OPD_Date = ?');
+    //   queryParams.push(OPD_Date);
+    // }
+    // if (DoctorID) {
+    //   updates.push('DoctorID = ?');
+    //   queryParams.push(DoctorID);
+    // }
   
-    if (updates.length === 0) {
-      return res.status(400).json({ message: 'No fields to update provided' });
-    }
+    // if (updates.length === 0) {
+    //   return res.status(400).json({ message: 'No fields to update provided' });
+    // }
   
-    baseQuery += updates.join(', ');
-    baseQuery += ' WHERE PatientID = ?';
-    queryParams.push(PatientID);
+    // baseQuery += updates.join(', ');
+    // baseQuery += ' WHERE PatientID = ?';
+    // queryParams.push(PatientID);
+  
+    // try {
+    //   const [result] = await db.execute(baseQuery, queryParams);
+    //   res.status(200).json({ message: 'OutPatient details updated successfully', result });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to update OutPatient' });
+    // }
+    // const { id } = req.params;
+    // const { AdmissionDate, DischargeDate, Gender, MobileNumber, Address, OPD_Date, DoctorID } = req.body;
+    // try {
+    //   const [result] = await db.execute(
+    //     `UPDATE OutPatient SET AdmissionDate = ?, DischargeDate = ?, Gender = ?, MobileNumber = ?, Address = ?, OPD_Date = ?, DoctorID = ? WHERE PatientID = ?`,
+    //     [AdmissionDate, DischargeDate, Gender, MobileNumber, Address, OPD_Date, DoctorID, id]
+    //   );
+    //   if (result.affectedRows === 0) return res.status(404).json({ message: 'OutPatient not found' });
+    //   res.json({ message: 'OutPatient updated successfully' });
+    // } catch (error) {
+    //   res.status(500).json({ error: 'Failed to update OutPatient' });
+    // }
+
+    const { id } = req.params;
+    const { AdmissionDate, DischargeDate, Gender, MobileNumber, Address, OPD_Date, DoctorID } = req.body;
   
     try {
-      const [result] = await db.execute(baseQuery, queryParams);
-      res.status(200).json({ message: 'OutPatient details updated successfully', result });
+      console.log(`Updating OutPatient ID ${id} with data:`, req.body);
+  
+      let updateFields = [];
+      let values = [];
+  
+      if (AdmissionDate) {
+        updateFields.push('AdmissionDate = ?');
+        values.push(AdmissionDate);
+      }
+      if (DischargeDate) {
+        updateFields.push('DischargeDate = ?');
+        values.push(DischargeDate);
+      }
+      if (Gender) {
+        updateFields.push('Gender = ?');
+        values.push(Gender);
+      }
+      if (MobileNumber) {
+        updateFields.push('MobileNumber = ?');
+        values.push(MobileNumber);
+      }
+      if (Address) {
+        updateFields.push('Address = ?');
+        values.push(Address);
+      }
+      if (OPD_Date) {
+        updateFields.push('OPD_Date = ?');
+        values.push(OPD_Date);
+      }
+      if (DoctorID) {
+        updateFields.push('DoctorID = ?');
+        values.push(DoctorID);
+      }
+  
+      if (updateFields.length === 0) {
+        return res.status(400).json({ message: 'No fields to update' });
+      }
+  
+      const query = `
+        UPDATE OutPatient
+        SET ${updateFields.join(', ')}
+        WHERE PatientID = ?
+      `;
+      values.push(id);
+  
+      const [result] = await db.execute(query, values);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'OutPatient not found' });
+      }
+  
+      res.status(200).json({ message: 'OutPatient updated successfully' });
     } catch (error) {
-      console.error(error);
+      console.error('Error updating OutPatient:', error);
       res.status(500).json({ message: 'Failed to update OutPatient' });
     }
 };
   
 const deleteOutPatient = async (req, res) => {
-    const { PatientID } = req.body;
+    // const { PatientID } = req.body;
   
-    if (!PatientID) {
-      return res.status(400).json({ message: 'Please provide PatientID to delete' });
-    }
+    // if (!PatientID) {
+    //   return res.status(400).json({ message: 'Please provide PatientID to delete' });
+    // }
   
-    const deleteQuery = `DELETE FROM outpatient WHERE PatientID = ?`;
+    // const deleteQuery = `DELETE FROM outpatient WHERE PatientID = ?`;
   
+    // try {
+    //   const [result] = await db.execute(deleteQuery, [PatientID]);
+  
+    //   if (result.affectedRows === 0) {
+    //     return res.status(404).json({ message: `No outpatient found with ID: ${PatientID}` });
+    //   }
+  
+    //   res.status(200).json({ message: `OutPatient with ID ${PatientID} deleted successfully` });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to delete outpatient' });
+    // }
+    const { id } = req.params;
     try {
-      const [result] = await db.execute(deleteQuery, [PatientID]);
-  
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: `No outpatient found with ID: ${PatientID}` });
-      }
-  
-      res.status(200).json({ message: `OutPatient with ID ${PatientID} deleted successfully` });
+      const [result] = await db.execute(`DELETE FROM OutPatient WHERE PatientID = ?`, [id]);
+      if (result.affectedRows === 0) return res.status(404).json({ message: 'OutPatient not found' });
+      res.json({ message: 'OutPatient deleted successfully' });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Failed to delete outpatient' });
+      res.status(500).json({ error: 'Failed to delete OutPatient' });
     }
 };
 module.exports ={getOutPatientTables, getOutPatient,postOutPatient,patchOutPatient, deleteOutPatient}

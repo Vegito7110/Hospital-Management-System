@@ -78,74 +78,134 @@ const postStaff = async (req, res) => {
   };
 
   const patchStaff = async (req, res) => {
-    const { StaffID, FirstName, Surname, Designation, Address, MobileNumber } = req.body;
+    // const { StaffID, FirstName, Surname, Designation, Address, MobileNumber } = req.body;
   
-    if (!StaffID) {
-      return res.status(400).json({ message: 'Please provide StaffID for patching' });
-    }
+    // if (!StaffID) {
+    //   return res.status(400).json({ message: 'Please provide StaffID for patching' });
+    // }
   
-    let baseQuery = 'UPDATE Staff SET ';
-    const queryParams = [];
-    const updates = [];
+    // let baseQuery = 'UPDATE Staff SET ';
+    // const queryParams = [];
+    // const updates = [];
   
-    if (FirstName) {
-      updates.push('FirstName = ?');
-      queryParams.push(FirstName);
-    }
-    if (Surname) {
-      updates.push('Surname = ?');
-      queryParams.push(Surname);
-    }
-    if (Designation) {
-      updates.push('Designation = ?');
-      queryParams.push(Designation);
-    }
-    if (Address) {
-      updates.push('Address = ?');
-      queryParams.push(Address);
-    }
-    if (MobileNumber) {
-      updates.push('MobileNumber = ?');
-      queryParams.push(MobileNumber);
-    }
+    // if (FirstName) {
+    //   updates.push('FirstName = ?');
+    //   queryParams.push(FirstName);
+    // }
+    // if (Surname) {
+    //   updates.push('Surname = ?');
+    //   queryParams.push(Surname);
+    // }
+    // if (Designation) {
+    //   updates.push('Designation = ?');
+    //   queryParams.push(Designation);
+    // }
+    // if (Address) {
+    //   updates.push('Address = ?');
+    //   queryParams.push(Address);
+    // }
+    // if (MobileNumber) {
+    //   updates.push('MobileNumber = ?');
+    //   queryParams.push(MobileNumber);
+    // }
   
-    if (updates.length === 0) {
-      return res.status(400).json({ message: 'No fields to update provided' });
-    }
+    // if (updates.length === 0) {
+    //   return res.status(400).json({ message: 'No fields to update provided' });
+    // }
   
-    baseQuery += updates.join(', ');
-    baseQuery += ' WHERE StaffID = ?';
-    queryParams.push(StaffID);
+    // baseQuery += updates.join(', ');
+    // baseQuery += ' WHERE StaffID = ?';
+    // queryParams.push(StaffID);
+  
+    // try {
+    //   const [result] = await db.execute(baseQuery, queryParams);
+    //   res.status(200).json({ message: 'Staff details updated successfully', result });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to update staff' });
+    // }
+    const { id } = req.params;
+    const { FirstName, Surname, Designation, Address, MobileNumber } = req.body;
   
     try {
-      const [result] = await db.execute(baseQuery, queryParams);
-      res.status(200).json({ message: 'Staff details updated successfully', result });
+      console.log(`Updating Staff ID ${id} with data:`, req.body);
+  
+      let updateFields = [];
+      let values = [];
+  
+      if (FirstName !== undefined) {
+        updateFields.push('FirstName = ?');
+        values.push(FirstName);
+      }
+      if (Surname !== undefined) {
+        updateFields.push('Surname = ?');
+        values.push(Surname);
+      }
+      if (Designation !== undefined) {
+        updateFields.push('Designation = ?');
+        values.push(Designation);
+      }
+      if (Address !== undefined) {
+        updateFields.push('Address = ?');
+        values.push(Address);
+      }
+      if (MobileNumber !== undefined) {
+        updateFields.push('MobileNumber = ?');
+        values.push(MobileNumber);
+      }
+  
+      if (updateFields.length === 0) {
+        return res.status(400).json({ message: 'No fields to update' });
+      }
+  
+      const query = `
+        UPDATE Staff
+        SET ${updateFields.join(', ')}
+        WHERE StaffID = ?
+      `;
+      values.push(id);
+  
+      const [result] = await db.execute(query, values);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Staff not found' });
+      }
+  
+      res.status(200).json({ message: 'Staff updated successfully' });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Failed to update staff' });
+      console.error('Error updating Staff:', error);
+      res.status(500).json({ message: 'Failed to update Staff' });
     }
   };
   
 const deleteStaff = async (req, res) => {
-    const { StaffID } = req.body;
+    // const { StaffID } = req.body;
   
-    if (!StaffID) {
-      return res.status(400).json({ message: 'Please provide StaffID to delete' });
-    }
+    // if (!StaffID) {
+    //   return res.status(400).json({ message: 'Please provide StaffID to delete' });
+    // }
   
-    const deleteQuery = `DELETE FROM staff WHERE StaffID = ?`;
+    // const deleteQuery = `DELETE FROM staff WHERE StaffID = ?`;
   
+    // try {
+    //   const [result] = await db.execute(deleteQuery, [StaffID]);
+  
+    //   if (result.affectedRows === 0) {
+    //     return res.status(404).json({ message: `No staff found with ID: ${StaffID}` });
+    //   }
+  
+    //   res.status(200).json({ message: `Staff with ID ${StaffID} deleted successfully` });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to delete staff' });
+    // }
+    const { id } = req.params;
     try {
-      const [result] = await db.execute(deleteQuery, [StaffID]);
-  
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: `No staff found with ID: ${StaffID}` });
-      }
-  
-      res.status(200).json({ message: `Staff with ID ${StaffID} deleted successfully` });
+      const [result] = await db.execute(`DELETE FROM Staff WHERE StaffID = ?`, [id]);
+      if (result.affectedRows === 0) return res.status(404).json({ message: 'Staff not found' });
+      res.json({ message: 'Staff deleted successfully' });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Failed to delete staff' });
+      res.status(500).json({ error: 'Failed to delete Staff' });
     }
 };
 module.exports ={getStaffTables, getStaff,postStaff,patchStaff, deleteStaff}

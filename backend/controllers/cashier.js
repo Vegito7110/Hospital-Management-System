@@ -63,63 +63,112 @@ const postCashier = async (req, res) => {
 };
 
 const patchCashier = async (req, res) => {
-    const { StaffID, Name, BillID } = req.body;
+    // const { StaffID, Name, BillID } = req.body;
   
-    if (!StaffID) {
-      return res.status(400).json({ message: 'Please provide StaffID for patching' });
-    }
+    // if (!StaffID) {
+    //   return res.status(400).json({ message: 'Please provide StaffID for patching' });
+    // }
   
-    let baseQuery = 'UPDATE Cashier SET ';
-    const queryParams = [];
-    const updates = [];
+    // let baseQuery = 'UPDATE Cashier SET ';
+    // const queryParams = [];
+    // const updates = [];
   
-    if (Name) {
-      updates.push('Name = ?');
-      queryParams.push(Name);
-    }
-    if (BillID) {
-      updates.push('BillID = ?');
-      queryParams.push(BillID);
-    }
+    // if (Name) {
+    //   updates.push('Name = ?');
+    //   queryParams.push(Name);
+    // }
+    // if (BillID) {
+    //   updates.push('BillID = ?');
+    //   queryParams.push(BillID);
+    // }
   
-    if (updates.length === 0) {
-      return res.status(400).json({ message: 'No fields to update provided' });
-    }
+    // if (updates.length === 0) {
+    //   return res.status(400).json({ message: 'No fields to update provided' });
+    // }
   
-    baseQuery += updates.join(', ');
-    baseQuery += ' WHERE StaffID = ?';
-    queryParams.push(StaffID);
+    // baseQuery += updates.join(', ');
+    // baseQuery += ' WHERE StaffID = ?';
+    // queryParams.push(StaffID);
+  
+    // try {
+    //   const [result] = await db.execute(baseQuery, queryParams);
+    //   res.status(200).json({ message: 'Cashier details updated successfully', result });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to update Cashier' });
+    // }
+    const { id } = req.params;
+    const { Name, BillID } = req.body;
   
     try {
-      const [result] = await db.execute(baseQuery, queryParams);
-      res.status(200).json({ message: 'Cashier details updated successfully', result });
+      console.log(`Updating Cashier StaffID ${id} with data:`, req.body);
+  
+      let updateFields = [];
+      let values = [];
+  
+      if (Name !== undefined) {
+        updateFields.push('Name = ?');
+        values.push(Name);
+      }
+      if (BillID !== undefined) {
+        updateFields.push('BillID = ?');
+        values.push(BillID);
+      }
+  
+      if (updateFields.length === 0) {
+        return res.status(400).json({ message: 'No fields to update' });
+      }
+  
+      const query = `
+        UPDATE Cashier
+        SET ${updateFields.join(', ')}
+        WHERE StaffID = ?
+      `;
+      values.push(id);
+  
+      const [result] = await db.execute(query, values);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Cashier not found' });
+      }
+  
+      res.status(200).json({ message: 'Cashier updated successfully' });
     } catch (error) {
-      console.error(error);
+      console.error('Error updating Cashier:', error);
       res.status(500).json({ message: 'Failed to update Cashier' });
     }
 };
   
 const deleteCashier = async (req, res) => {
-    const { StaffID } = req.body;
+    // const { StaffID } = req.body;
   
-    if (!StaffID) {
-      return res.status(400).json({ message: 'Please provide StaffID to delete' });
-    }
+    // if (!StaffID) {
+    //   return res.status(400).json({ message: 'Please provide StaffID to delete' });
+    // }
   
-    const deleteQuery = `DELETE FROM cashier WHERE StaffID = ?`;
+    // const deleteQuery = `DELETE FROM cashier WHERE StaffID = ?`;
   
+    // try {
+    //   const [result] = await db.execute(deleteQuery, [StaffID]);
+  
+    //   if (result.affectedRows === 0) {
+    //     return res.status(404).json({ message: `No doctor found with ID: ${StaffID}` });
+    //   }
+  
+    //   res.status(200).json({ message: `Doctor with ID ${StaffID} deleted successfully` });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to delete Staff' });
+    // }
+    const { id } = req.params;
     try {
-      const [result] = await db.execute(deleteQuery, [StaffID]);
-  
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: `No doctor found with ID: ${StaffID}` });
-      }
-  
-      res.status(200).json({ message: `Doctor with ID ${StaffID} deleted successfully` });
+      const [result] = await db.execute(`DELETE FROM Cashier WHERE StaffID = ?`, [id]);
+      if (result.affectedRows === 0) return res.status(404).json({ message: 'Cashier not found' });
+      res.json({ message: 'Cashier deleted successfully' });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Failed to delete Staff' });
+      res.status(500).json({ error: 'Failed to delete Cashier' });
     }
-};
+  };
+
 
 module.exports ={ getCashierTables, getCashier, postCashier,patchCashier, deleteCashier}

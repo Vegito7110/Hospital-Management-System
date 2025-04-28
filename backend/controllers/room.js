@@ -40,12 +40,16 @@ const getRoom = async (req,res) =>{
 }
 
 const postRoom = async (req, res) => {
-    const { RoomNumber, RoomCost, Vacant, InPatientID } = req.body;
+    let { RoomNumber, RoomCost, Vacant, InPatientID } = req.body;
   
     if (!RoomNumber || !RoomCost) {
       return res.status(400).json({ message: 'Please provide important details' });
     }
   
+    if (typeof Vacant === 'string') {
+      Vacant = Vacant.toLowerCase() === 'yes' ? 1 : 0;
+    }
+
     const query = `
       INSERT INTO Room (RoomNumber, RoomCost, Vacant, InPatientID)
       VALUES (?, ?, ?, ?)
@@ -68,66 +72,122 @@ const postRoom = async (req, res) => {
 };
 
 const patchRoom = async (req, res) => {
-    const { RoomNumber, RoomCost, Vacant, InPatientID } = req.body;
+    // const { RoomNumber, RoomCost, Vacant, InPatientID } = req.body;
   
-    if (!RoomNumber) {
-      return res.status(400).json({ message: 'Please provide RoomNumber for patching' });
+    // if (!RoomNumber) {
+    //   return res.status(400).json({ message: 'Please provide RoomNumber for patching' });
+    // }
+  
+    // let baseQuery = 'UPDATE Room SET ';
+    // const queryParams = [];
+    // const updates = [];
+  
+    // if (RoomCost) {
+    //   updates.push('RoomCost = ?');
+    //   queryParams.push(RoomCost);
+    // }
+    // if (Vacant !== undefined) {
+    //   updates.push('Vacant = ?');
+    //   queryParams.push(Vacant);
+    // }
+    // if (InPatientID) {
+    //   updates.push('InPatientID = ?');
+    //   queryParams.push(InPatientID);
+    // }
+  
+    // if (updates.length === 0) {
+    //   return res.status(400).json({ message: 'No fields to update provided' });
+    // }
+  
+    // baseQuery += updates.join(', ');
+    // baseQuery += ' WHERE RoomNumber = ?';
+    // queryParams.push(RoomNumber);
+  
+    // try {
+    //   const [result] = await db.execute(baseQuery, queryParams);
+    //   res.status(200).json({ message: 'Room details updated successfully', result });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to update Room' });
+    // }
+    const { id } = req.params;
+    const { RoomCost, Vacant, InPatientID } = req.body;
+  
+    if (typeof Vacant === 'string') {
+      Vacant = Vacant.toLowerCase() === 'yes' ? 1 : 0;
     }
-  
-    let baseQuery = 'UPDATE Room SET ';
-    const queryParams = [];
-    const updates = [];
-  
-    if (RoomCost) {
-      updates.push('RoomCost = ?');
-      queryParams.push(RoomCost);
-    }
-    if (Vacant !== undefined) {
-      updates.push('Vacant = ?');
-      queryParams.push(Vacant);
-    }
-    if (InPatientID) {
-      updates.push('InPatientID = ?');
-      queryParams.push(InPatientID);
-    }
-  
-    if (updates.length === 0) {
-      return res.status(400).json({ message: 'No fields to update provided' });
-    }
-  
-    baseQuery += updates.join(', ');
-    baseQuery += ' WHERE RoomNumber = ?';
-    queryParams.push(RoomNumber);
-  
     try {
-      const [result] = await db.execute(baseQuery, queryParams);
-      res.status(200).json({ message: 'Room details updated successfully', result });
+      console.log(`Updating Room Number ${id} with data:`, req.body);
+  
+      let updateFields = [];
+      let values = [];
+  
+      if (RoomCost !== undefined) {
+        updateFields.push('RoomCost = ?');
+        values.push(RoomCost);
+      }
+      if (Vacant !== undefined) {
+        updateFields.push('Vacant = ?');
+        values.push(Vacant);
+      }
+      if (InPatientID !== undefined) {
+        updateFields.push('InPatientID = ?');
+        values.push(InPatientID);
+      }
+  
+      if (updateFields.length === 0) {
+        return res.status(400).json({ message: 'No fields to update' });
+      }
+  
+      const query = `
+        UPDATE Room
+        SET ${updateFields.join(', ')}
+        WHERE RoomNumber = ?
+      `;
+      values.push(id);
+  
+      const [result] = await db.execute(query, values);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Room not found' });
+      }
+  
+      res.status(200).json({ message: 'Room updated successfully' });
     } catch (error) {
-      console.error(error);
+      console.error('Error updating Room:', error);
       res.status(500).json({ message: 'Failed to update Room' });
     }
 };
   
 const deleteRoom = async (req, res) => {
-    const { RoomNumber } = req.body;
+    // const { RoomNumber } = req.body;
   
-    if (!RoomNumber) {
-      return res.status(400).json({ message: 'Please provide RoomNumber to delete' });
-    }
+    // if (!RoomNumber) {
+    //   return res.status(400).json({ message: 'Please provide RoomNumber to delete' });
+    // }
   
-    const deleteQuery = `DELETE FROM room WHERE RoomNumber = ?`;
+    // const deleteQuery = `DELETE FROM room WHERE RoomNumber = ?`;
   
+    // try {
+    //   const [result] = await db.execute(deleteQuery, [RoomNumber]);
+  
+    //   if (result.affectedRows === 0) {
+    //     return res.status(404).json({ message: `No room found with ID: ${RoomNumber}` });
+    //   }
+  
+    //   res.status(200).json({ message: `Room with ID ${RoomNumber} deleted successfully` });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to delete room' });
+    // }
+
+    const { id } = req.params;
     try {
-      const [result] = await db.execute(deleteQuery, [RoomNumber]);
-  
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: `No room found with ID: ${RoomNumber}` });
-      }
-  
-      res.status(200).json({ message: `Room with ID ${RoomNumber} deleted successfully` });
+      const [result] = await db.execute(`DELETE FROM Room WHERE RoomNumber = ?`, [id]);
+      if (result.affectedRows === 0) return res.status(404).json({ message: 'Room not found' });
+      res.json({ message: 'Room deleted successfully' });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Failed to delete room' });
+      res.status(500).json({ error: 'Failed to delete Room' });
     }
 };
 // module exports

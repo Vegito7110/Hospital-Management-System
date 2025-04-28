@@ -1,85 +1,125 @@
 import React, { useState } from "react";
+import axios from 'axios';
 
 export default function Staff() {
   const [formData, setFormData] = useState({
-    firstName: '',
-    surname: '',
-    designation: '',
-    address: '',
-    mobileNumber: ''
+    StaffID: '',
+    FirstName: '',
+    Surname: '',
+    Designation: '',
+    Address: '',
+    MobileNumber: ''
   });
 
-  const [searchName, setSearchName] = useState('');
-  const [deleteName, setDeleteName] = useState('');
-  const [updateName, setUpdateName] = useState('');
+  const [staffID, setStaffID] = useState('');
+  const [updateID, setUpdateID] = useState('');
+  const [deleteID, setDeleteID] = useState('');
   const [updatedData, setUpdatedData] = useState({
-    designation: '',
-    address: '',
-    mobileNumber: ''
+    FirstName: '',
+    Surname: '',
+    Designation: '',
+    Address: '',
+    MobileNumber: ''
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    setFormData(prevState => ({
+      ...prevState,
       [name]: value
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Adding Staff Member:", formData);
+    try {
+      const response = await axios.post('http://localhost:5000/admin/staff1', formData, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      console.log("Staff added successfully:", response.data);
+      alert("Staff added!");
+    } catch (error) {
+      console.error("Error adding staff:", error);
+      alert("Failed to add staff");
+    }
   };
 
-  const handleSearch = (e) => {
+  const handleCheckStaff = async (e) => {
     e.preventDefault();
-    console.log("Searching for staff:", searchName);
+    try {
+      const response = await axios.get(`http://localhost:5000/admin/staff1/${staffID}`);
+      console.log("Staff data:", response.data);
+      alert(`Staff found: ${response.data.StaffID}`);
+    } catch (error) {
+      console.error("Error fetching staff:", error);
+      alert("Staff not found");
+    }
   };
 
-  const handleDelete = (e) => {
+  const handleDeleteStaff = async (e) => {
     e.preventDefault();
-    console.log("Deleting staff:", deleteName);
+    try {
+      await axios.delete(`http://localhost:5000/admin/staff1/${deleteID}`);
+      console.log("Staff deleted successfully");
+      alert("Staff deleted!");
+    } catch (error) {
+      console.error("Error deleting staff:", error);
+      alert("Failed to delete staff");
+    }
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdateStaff = async (e) => {
     e.preventDefault();
-    console.log(`Updating ${updateName} with:`, updatedData);
+    try {
+      const response = await axios.patch(`http://localhost:5000/admin/staff1/${updateID}`, updatedData);
+      console.log("Staff updated successfully:", response.data);
+      alert("Staff updated!");
+    } catch (error) {
+      console.error("Error updating staff:", error);
+      alert("Failed to update staff");
+    }
   };
 
   return (
-    <div className="px-6 max-w-4xl mx-auto">
-      <h2 className="text-lg font-semibold">Add New Staff Member</h2>
+    <div className="p-6 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Add Staff Details</h2>
 
-      {/* Add Staff */}
+      {/* Add Staff Form */}
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-8 shadow-md rounded-lg mb-10">
         <div>
-          <label className="block text-sm font-medium mb-1">First Name</label>
-          <input type="text" name="firstName" value={formData.firstName} onChange={handleChange}
+          <label className="block text-sm font-medium text-gray-700 mb-1">Staff ID</label>
+          <input type="number" name="StaffID" value={formData.StaffID} onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 701" required />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+          <input type="text" name="FirstName" value={formData.FirstName} onChange={handleChange}
             className="w-full px-3 py-2 border rounded-md" placeholder="e.g., John" required />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Surname</label>
-          <input type="text" name="surname" value={formData.surname} onChange={handleChange}
+          <label className="block text-sm font-medium text-gray-700 mb-1">Surname</label>
+          <input type="text" name="Surname" value={formData.Surname} onChange={handleChange}
             className="w-full px-3 py-2 border rounded-md" placeholder="e.g., Doe" required />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Designation</label>
-          <input type="text" name="designation" value={formData.designation} onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., Nurse" required />
+          <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+          <input type="text" name="Designation" value={formData.Designation} onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., Nurse, Technician" required />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Address</label>
-          <input type="text" name="address" value={formData.address} onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 123 Street Name" required />
+          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+          <textarea name="Address" value={formData.Address} onChange={handleChange} rows={3}
+            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 123 Main Street" />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Mobile Number</label>
-          <input type="text" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 9876543210" required />
+          <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+          <input type="text" name="MobileNumber" value={formData.MobileNumber} onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md" placeholder="e.g., 9876543210" />
         </div>
 
         <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
@@ -87,38 +127,46 @@ export default function Staff() {
         </button>
       </form>
 
-      {/* Search Staff */}
-      <form onSubmit={handleSearch} className="mb-10 space-y-2">
-        <h3 className="text-lg font-semibold">Search Staff</h3>
-        <input type="text" placeholder="Enter First Name to search" value={searchName}
-          onChange={(e) => setSearchName(e.target.value)} className="border px-3 py-2 rounded w-full" />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
-      </form>
+      {/* Check Staff
+      <form onSubmit={handleCheckStaff} className="mb-10 space-y-2">
+        <h3 className="text-lg font-semibold">Check Staff</h3>
+        <input type="text" placeholder="Enter Staff ID" value={staffID}
+          onChange={(e) => setStaffID(e.target.value)} className="border px-3 py-2 rounded w-full" />
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Check</button>
+      </form> */}
 
       {/* Delete Staff */}
-      <form onSubmit={handleDelete} className="mb-10 space-y-2">
+      <form onSubmit={handleDeleteStaff} className="mb-10 space-y-2">
         <h3 className="text-lg font-semibold">Delete Staff</h3>
-        <input type="text" placeholder="Enter First Name to delete" value={deleteName}
-          onChange={(e) => setDeleteName(e.target.value)} className="border px-3 py-2 rounded w-full" />
+        <input type="text" placeholder="Enter Staff ID to delete" value={deleteID}
+          onChange={(e) => setDeleteID(e.target.value)} className="border px-3 py-2 rounded w-full" />
         <button type="submit" className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
       </form>
 
       {/* Update Staff */}
-      <form onSubmit={handleUpdate} className="mb-10 space-y-2">
-        <h3 className="text-lg font-semibold">Update Staff</h3>
-        <input type="text" placeholder="Enter First Name to update" value={updateName}
-          onChange={(e) => setUpdateName(e.target.value)} className="border px-3 py-2 rounded w-full" />
+      <form onSubmit={handleUpdateStaff} className="mb-10 space-y-2">
+        <h3 className="text-lg font-semibold">Update Staff Details</h3>
+        <input type="text" placeholder="Enter Staff ID to update" value={updateID}
+          onChange={(e) => setUpdateID(e.target.value)} className="border px-3 py-2 rounded w-full" />
 
-        <input type="text" placeholder="Updated Designation" value={updatedData.designation}
-          onChange={(e) => setUpdatedData({ ...updatedData, designation: e.target.value })}
+        <input type="text" placeholder="Updated First Name" value={updatedData.FirstName}
+          onChange={(e) => setUpdatedData({ ...updatedData, FirstName: e.target.value })}
           className="border px-3 py-2 rounded w-full" />
 
-        <input type="text" placeholder="Updated Address" value={updatedData.address}
-          onChange={(e) => setUpdatedData({ ...updatedData, address: e.target.value })}
+        <input type="text" placeholder="Updated Surname" value={updatedData.Surname}
+          onChange={(e) => setUpdatedData({ ...updatedData, Surname: e.target.value })}
           className="border px-3 py-2 rounded w-full" />
 
-        <input type="text" placeholder="Updated Mobile Number" value={updatedData.mobileNumber}
-          onChange={(e) => setUpdatedData({ ...updatedData, mobileNumber: e.target.value })}
+        <input type="text" placeholder="Updated Designation" value={updatedData.Designation}
+          onChange={(e) => setUpdatedData({ ...updatedData, Designation: e.target.value })}
+          className="border px-3 py-2 rounded w-full" />
+
+        <input type="text" placeholder="Updated Address" value={updatedData.Address}
+          onChange={(e) => setUpdatedData({ ...updatedData, Address: e.target.value })}
+          className="border px-3 py-2 rounded w-full" />
+
+        <input type="tel" placeholder="Updated Mobile Number" value={updatedData.MobileNumber}
+          onChange={(e) => setUpdatedData({ ...updatedData, MobileNumber: e.target.value })}
           className="border px-3 py-2 rounded w-full" />
 
         <button type="submit" className="bg-yellow-500 text-white px-4 py-2 rounded">Update</button>
@@ -126,5 +174,3 @@ export default function Staff() {
     </div>
   );
 }
-
-  

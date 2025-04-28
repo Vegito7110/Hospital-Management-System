@@ -8,43 +8,45 @@ const getDoctorTables = async (req,res)=>{
 }
 
 const getDoctor = async (req,res) =>{
-    const {DoctorID,Name,Specialization, MobileNumber, Cabin, Address} = req.body;
-    let baseQuery = 'SELECT * FROM doctor WHERE 1=1'
-    const queryObject =[];
-    if(DoctorID){
-        baseQuery+= ' AND DoctorID= ?';
-        queryObject.push(DoctorID);
-    }
-    if(Name){
-        baseQuery+= ' AND Name LIKE ?';
-        queryObject.push(`%${Name}%`);
-    }
-    if(Specialization){
-        baseQuery+= ' AND Specialization LIKE ?'
-        queryObject.push(`%${Specialization}%`);
-    }
-    if(MobileNumber){
-        baseQuery+= ' AND MobileNumber= ?'
-        queryObject.push(MobileNumber);
-    }
-    if(Cabin){
-        baseQuery+= ' AND Cabin= ?'
-        queryObject.push(Cabin)
-    }
-    if(Address){
-        baseQuery+= ' AND Address= ?'
-        queryObject.push(`%${Address}%`);
-    }
-    try {
-        const [rows] = await db.execute(baseQuery,queryObject);
-        if(rows.length===0){
-            return res.status(404).json({message:'No valid doctor found'})
-        }
-        res.status(200).json(rows);
-    } catch (error) {
-        console.log(error);
-        res.status(406).json({message:'Failed to fetch any doctors'})
-    }
+    // const {DoctorID,Name,Specialization, MobileNumber, Cabin, Address} = req.body;
+    // let baseQuery = 'SELECT * FROM doctor WHERE 1=1'
+    // const queryObject =[];
+    // if(DoctorID){
+    //     baseQuery+= ' AND DoctorID= ?';
+    //     queryObject.push(DoctorID);
+    // }
+    // if(Name){
+    //     baseQuery+= ' AND Name LIKE ?';
+    //     queryObject.push(`%${Name}%`);
+    // }
+    // if(Specialization){
+    //     baseQuery+= ' AND Specialization LIKE ?'
+    //     queryObject.push(`%${Specialization}%`);
+    // }
+    // if(MobileNumber){
+    //     baseQuery+= ' AND MobileNumber= ?'
+    //     queryObject.push(MobileNumber);
+    // }
+    // if(Cabin){
+    //     baseQuery+= ' AND Cabin= ?'
+    //     queryObject.push(Cabin)
+    // }
+    // if(Address){
+    //     baseQuery+= ' AND Address= ?'
+    //     queryObject.push(`%${Address}%`);
+    // }
+    // try {
+    //     const [rows] = await db.execute(baseQuery,queryObject);
+    //     if(rows.length===0){
+    //         return res.status(404).json({message:'No valid doctor found'})
+    //     }
+    //     res.status(200).json(rows);
+    // } catch (error) {
+    //     console.log(error);
+    //     res.status(406).json({message:'Failed to fetch any doctors'})
+    // }
+    
+
 }
 
 const postDoctor = async(req,res) =>{
@@ -79,76 +81,141 @@ const postDoctor = async(req,res) =>{
 }
 
 const patchDoctor = async (req, res) => {
-    const { DoctorID, Name, Specialization, MobileNumber, Cabin, Address } = req.body;
+    // const { DoctorID, Name, Specialization, MobileNumber, Cabin, Address } = req.body;
   
-    if (!DoctorID) {
-      return res.status(400).json({ message: 'Please provide DoctorID for patching' });
-    }
+    // if (!DoctorID) {
+    //   return res.status(400).json({ message: 'Please provide DoctorID for patching' });
+    // }
   
-    let baseQuery = 'UPDATE doctor SET ';
-    const queryParams = [];
-    const updates = [];
+    // let baseQuery = 'UPDATE doctor SET ';
+    // const queryParams = [];
+    // const updates = [];
   
-    if (Name) {
-      updates.push('Name = ?');
-      queryParams.push(Name);
-    }
-    if (Specialization) {
-      updates.push('Specialization = ?');
-      queryParams.push(Specialization);
-    }
-    if (MobileNumber) {
-      updates.push('MobileNumber = ?');
-      queryParams.push(MobileNumber);
-    }
-    if (Cabin) {
-      updates.push('Cabin = ?');
-      queryParams.push(Cabin);
-    }
-    if (Address) {
-      updates.push('Address = ?');
-      queryParams.push(Address);
-    }
-    // Check if there's anything to update
-    if (updates.length === 0) {
-      return res.status(400).json({ message: 'No fields to update provided' });
-    }
+    // if (Name) {
+    //   updates.push('Name = ?');
+    //   queryParams.push(Name);
+    // }
+    // if (Specialization) {
+    //   updates.push('Specialization = ?');
+    //   queryParams.push(Specialization);
+    // }
+    // if (MobileNumber) {
+    //   updates.push('MobileNumber = ?');
+    //   queryParams.push(MobileNumber);
+    // }
+    // if (Cabin) {
+    //   updates.push('Cabin = ?');
+    //   queryParams.push(Cabin);
+    // }
+    // if (Address) {
+    //   updates.push('Address = ?');
+    //   queryParams.push(Address);
+    // }
+    // // Check if there's anything to update
+    // if (updates.length === 0) {
+    //   return res.status(400).json({ message: 'No fields to update provided' });
+    // }
   
-    // Join the update statements and add WHERE clause
-    baseQuery += updates.join(', ');
-    baseQuery += ' WHERE DoctorID = ?';
-    queryParams.push(DoctorID); // Add DoctorID to the end of parameters
+    // // Join the update statements and add WHERE clause
+    // baseQuery += updates.join(', ');
+    // baseQuery += ' WHERE DoctorID = ?';
+    // queryParams.push(DoctorID); // Add DoctorID to the end of parameters
+  
+    // try {
+    //   const [result] = await db.execute(baseQuery, queryParams);
+    //   res.status(200).json({ message: 'Doctor details updated successfully', result });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to update doctor' });
+    // }
+
+    const { id } = req.params;
+    const { Name, Specialization, MobileNumber } = req.body;
   
     try {
-      const [result] = await db.execute(baseQuery, queryParams);
-      res.status(200).json({ message: 'Doctor details updated successfully', result });
+      console.log(`Updating Doctor ID ${id} with data:`, req.body);
+  
+      let updateFields = [];
+      let values = [];
+  
+      if (Name) {
+        updateFields.push('Name = ?');
+        values.push(Name);
+      }
+      if (Specialization) {
+        updateFields.push('Specialization = ?');
+        values.push(Specialization);
+      }
+      if (MobileNumber) {
+        updateFields.push('MobileNumber = ?');
+        values.push(MobileNumber);
+      }
+  
+      if (updateFields.length === 0) {
+        return res.status(400).json({ message: 'No fields to update' });
+      }
+  
+      const query = `
+        UPDATE Doctor
+        SET ${updateFields.join(', ')}
+        WHERE DoctorID = ?
+      `;
+      values.push(id);
+  
+      const [result] = await db.execute(query, values);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Doctor not found' });
+      }
+  
+      res.status(200).json({ message: 'Doctor updated successfully' });
     } catch (error) {
-      console.error(error);
+      console.error('Error updating doctor:', error);
       res.status(500).json({ message: 'Failed to update doctor' });
     }
 };
 
 const deleteDoctor = async (req, res) => {
-    const { DoctorID } = req.body;
+    // const { DoctorID } = req.body;
   
-    if (!DoctorID) {
-      return res.status(400).json({ message: 'Please provide DoctorID to delete' });
-    }
+    // if (!DoctorID) {
+    //   return res.status(400).json({ message: 'Please provide DoctorID to delete' });
+    // }
   
-    const deleteQuery = `DELETE FROM doctor WHERE DoctorID = ?`;
+    // const deleteQuery = `DELETE FROM doctor WHERE DoctorID = ?`;
   
-    try {
-      const [result] = await db.execute(deleteQuery, [DoctorID]);
+    // try {
+    //   const [result] = await db.execute(deleteQuery, [Number(DoctorID)]);
   
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: `No doctor found with ID: ${DoctorID}` });
+    //   if (result.affectedRows === 0) {
+    //     return res.status(404).json({ message: `No doctor found with ID: ${DoctorID}` });
+    //   }
+  
+    //   res.status(200).json({ message: `Doctor with ID ${DoctorID} deleted successfully` });
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(500).json({ message: 'Failed to delete doctor' });
+    // }
+
+      const { id } = req.params; // <-- this is how you get deleteID
+    
+      try {
+        console.log('Deleting doctor with ID:', id);
+    
+        // your database query here
+        const query = `DELETE FROM Doctor WHERE DoctorID = ?`;
+        const [result] = await db.execute(query, [id]);
+    
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ message: 'Doctor not found' });
+        }
+    
+        res.status(200).json({ message: 'Doctor deleted successfully' });
+      } catch (error) {
+        console.error('Error deleting doctor:', error);
+        res.status(500).json({ message: 'Failed to delete doctor' });
       }
   
-      res.status(200).json({ message: `Doctor with ID ${DoctorID} deleted successfully` });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Failed to delete doctor' });
-    }
 };
 
 
